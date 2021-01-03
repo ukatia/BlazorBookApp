@@ -1,0 +1,63 @@
+﻿@page "/books"
+@inject BlazorBookApp.Services.BookService bookService
+
+<h1>Books Overview</h1>
+<p>
+    <a href="/create">Create New</a>
+</p>
+@if (books == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ISBN</th>
+                <th>Title</th>
+                <th>Subtitle</th>
+                <th>Author</th>
+                <th>Published</th>
+                <th>Publisher</th>
+                <th>Pages</th>
+                <th>Description</th>
+                <th>Website</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var book in books)
+            {
+                <tr>
+                    <td>@book.isbn</td>
+                    <td>@book.title</td>
+                    <td>@book.subtitle</td>^
+                    <td>@book.author</td>
+                    <td>@book.published.ToShortDateString()</td>
+                    <td>@book.publisher</td>
+                    <td>@book.pages</td>
+                    <td>@book.description</td>
+                    <td><a href="@book.website" target="_blank">@book.website</a></td>
+                    <td>
+                        <a class="nav-link" href="/edit/@book.isbn">
+                            <span class="oi oi-pencil" aria-hidden="true"></span> Edit
+                        </a>
+                        <a class="nav-link" href="/delete/@book.isbn">
+                            <span class="oi oi-trash" aria-hidden="true"></span> Delete
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private Book[] books;
+
+    protected override async Task OnInitializedAsync()
+    {
+        books = await bookService.GetBooksAsync();
+    }
+
+}

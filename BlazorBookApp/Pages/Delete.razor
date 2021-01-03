@@ -1,0 +1,75 @@
+﻿@page "/delete/{Id}"
+
+@inject BlazorBookApp.Services.BookService bookService
+@inject NavigationManager navigationManager
+
+<h3>Are you sure you want to delete the book with ISBN : @Id</h3>
+<hr />
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="form-group">
+            <label for="ISBN" class="control-label">ISBN:</label>
+            <input form="ISBN" class="form-control" readonly @bind="@book.isbn" />
+        </div>
+        <div class="form-group">
+            <label for="Title" class="control-label">Title:</label>
+            <input form="Title" class="form-control" readonly @bind="@book.title" />
+        </div>
+        <div class="form-group">
+            <label for="Subtitle" class="control-label">Subtitle:</label>
+            <input form="Subtitle" class="form-control" readonly @bind="@book.subtitle" />
+        </div>
+        <div class="form-group">
+            <label for="Author" class="control-label">Author:</label>
+            <input form="Author" class="form-control" readonly @bind="@book.author" />
+        </div>
+        <div class="form-group">
+            <label for="Published" class="control-label">Published:</label>
+            <input form="Published" class="form-control" readonly @bind="@book.published" />
+        </div>
+        <div class="form-group">
+            <label for="Publisher" class="control-label">Publisher:</label>
+            <input form="Publisher" class="form-control" readonly @bind="@book.publisher" />
+        </div>
+        <div class="form-group">
+            <label for="Pages" class="control-label">Pages:</label>
+            <input form="Pages" class="form-control" readonly @bind="@book.pages" />
+        </div>
+        <div class="form-group">
+            <label for="Description" class="control-label">Description:</label>
+            <input form="Description" class="form-control" readonly @bind="@book.description" />
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <div class="form-group">
+            <input type="button" class="btn btn-primary" @onclick="@DeleteBook" value="Delete" />
+            <input type="button" class="btn btn-secondary" @onclick="@Cancel" value="Cancel" />
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+
+    Book book = new Book();
+
+    protected override async Task OnInitializedAsync()
+    {
+        book = await Task.Run(() => bookService.GetById(Id));
+    }
+
+    public void DeleteBook()
+    {
+        bookService.Delete(Id);
+        navigationManager.NavigateTo("books");
+    }
+
+    void Cancel()
+    {
+        navigationManager.NavigateTo("books");
+    }
+}

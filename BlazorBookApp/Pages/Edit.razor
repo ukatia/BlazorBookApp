@@ -1,0 +1,84 @@
+﻿@page "/edit/{Id}"
+
+@inject BlazorBookApp.Services.BookService bookService
+@inject NavigationManager navigationManager
+
+<h3>Edit Book</h3>
+
+<hr />
+
+<form>
+    <div class="form-group">
+        <label for="ISBN" class="control-label">ISBN:</label>
+        <input for="ISBN" class="form-control" @bind="@book.isbn" />
+    </div>
+    <div class="form-group">
+        <label for="title" class="control-label">Title:</label>
+        <input for="title" class="form-control" @bind="@book.title" />
+    </div>
+    <div class="form-group">
+        <label for="subtitle" class="control-label">Subtitle:</label>
+        <input for="subtitle" class="form-control" @bind="@book.subtitle" />
+    </div>
+    <div class="form-group">
+        <label for="published">Published:</label>
+        <input type="date" id="published" name="published" @bind="@book.published">
+    </div>
+    <div class="form-group">
+        <label for="publisher" class="control-label">Publisher:</label>
+        <input for="publisher" class="form-control" @bind="@book.publisher" />
+    </div>
+    <div class="form-group">
+        <label for="pages" class="control-label">Pages:</label>
+        <input for="pages" class="form-control" type="number" min="1" max="10000000" @bind="@book.pages" />
+    </div>
+    <div class="form-group">
+        <label for="website" class="control-label">Website:</label>
+        <input for="website" class="form-control" type="url" @bind="@book.website" />
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <input type="button" class="btn btn-primary" @onclick="@UpdateBook" value="Save" />
+                <input type="button" class="btn btn-secondary" @onclick="@Cancel" value="Cancel" />
+            </div>
+        </div>
+    </div>
+</form>
+@* Return if error *@
+@if (result != "")
+{
+    <div class="row">
+        <div class="alert alert-danger" role="alert">
+            @result
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+
+    Book book = new Book();
+
+    public string result { get; set; } = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        book = await Task.Run(() => bookService.GetById(Id));
+    }
+
+    public void UpdateBook()
+    {
+        result = bookService.Edit(Id, book);
+        if (result == "")
+        {
+            navigationManager.NavigateTo("books");
+        }
+    }
+
+    void Cancel()
+    {
+        navigationManager.NavigateTo("books");
+    }
+}
